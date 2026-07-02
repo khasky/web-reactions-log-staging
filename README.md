@@ -38,9 +38,9 @@ git clone https://github.com/khasky/web-reactions-verifier
 cd web-reactions-verifier
 pnpm install
 node src/verify.mjs \
-  --api https://api.webreactions.app \
-  --repo https://raw.githubusercontent.com/khasky/web-reactions-log/main \
-  --pubkey <published Ed25519 key> \
+  --api https://api-staging.webreactions.app \
+  --repo https://raw.githubusercontent.com/khasky/web-reactions-log-staging/main \
+  --pubkey <published staging Ed25519 key> \
   --ots
 ```
 
