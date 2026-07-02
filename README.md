@@ -1,9 +1,15 @@
-# Web Reactions Log
+# Web Reactions Log (staging)
 
 Public, append-only transparency log for Web Reactions counters. It holds the
 signed checkpoints and their Bitcoin timestamps — anyone can use it, together with
 the public API and the open-source verifier, to recompute the counts and confirm
 the signed history was never rewritten.
+
+**This is the staging log** for the test environment at
+`https://api-staging.webreactions.app`, signed with its own key. Unlike the
+production log ([web-reactions-log](https://github.com/khasky/web-reactions-log)),
+it is **reset to genesis weekly** together with the staging database, so its
+history is intentionally short-lived.
 
 ## What's here
 
