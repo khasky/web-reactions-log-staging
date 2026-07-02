@@ -1,0 +1,15 @@
+{
+  "tree_size": "71",
+  "digest_hex": "3cbcdf2078fd78bc45dcdf5fb422caeed3c54e3741b59bb533e23b35ea23f336",
+  "calendars": [
+    {
+      "url": "https://a.pool.opentimestamps.org",
+      "response_b64": "8AiJnTIm7jRGbAjwILcH58TPcUjzB/YA/S3dWupjzwK8JuTGMCZrph42xzk/CPAQG9j97+tacosMw9RZWaVlwAjxIGcLWZRYcQj5cNUWOHamQT8XJyzSFoD8L9dK7ck07dcRCPAgTY4G3dfQBEpv10DdNjvrh8sv0ZomQ15kYutZkztF0ZsI8QRqRdhD8Ajjrn0Nao6e1ACD3+MNLvkMji4taHR0cHM6Ly9hbGljZS5idGMuY2FsZW5kYXIub3BlbnRpbWVzdGFtcHMub3Jn"
+    },
+    {
+      "url": "https://b.pool.opentimestamps.org",
+      "response_b64": "8AikQlJmxyDpKwjwEKLFNmmbfXihZCQhHmhz7TEI8CDg7KNRe4sCWfMSUfF8f6/WBSTUSJthQny8BYpDic6WXgjxBGpF2ETwCPPII/ThFObXAIPf4w0u+QyOLCtodHRwczovL2JvYi5idGMuY2FsZW5kYXIub3BlbnRpbWVzdGFtcHMub3Jn"
+    }
+  ],
+  "submitted_at": 1782962244072
+}
