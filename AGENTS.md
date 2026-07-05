@@ -1,4 +1,4 @@
-# AGENTS.md — Web Reactions Log
+# AGENTS.md — Web Reactions Log (staging)
 
 **Public, data-only repo. No application code.** Every file here is **machine-generated**, appended by the Web Reactions cron — signed checkpoints and their Bitcoin timestamps:
 

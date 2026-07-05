@@ -1,9 +1,9 @@
 # Web Reactions Log (staging)
 
-Public, append-only transparency log for Web Reactions counters. It holds the
-signed checkpoints and their Bitcoin timestamps — anyone can use it, together with
-the public API and the open-source verifier, to recompute the counts and confirm
-the signed history was never rewritten.
+Public, append-only transparency log for Web Reactions counters. This repository
+holds signed checkpoints and Bitcoin timestamps for the public reaction log. Used
+with the public API and the open-source verifier, it lets anyone recompute the
+counters and confirm the signed history was not silently rewritten.
 
 **This is the staging log** for the test environment at
 `https://api-staging.webreactions.app`, signed with its own key. Unlike the
@@ -60,3 +60,8 @@ Operator tooling, not part of the published log.
 
 Force-pushing or rewriting history in this repo is itself the tamper signal —
 third-party mirrors (e.g. Software Heritage) preserve the real history.
+
+## License
+
+The log data in this repository is dedicated to the public domain under
+[CC0 1.0 Universal](LICENSE) — copy, mirror, and verify it freely.
