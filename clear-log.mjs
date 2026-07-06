@@ -15,7 +15,7 @@
 //
 // Flags:
 //   --yes, -y         apply the deletion (otherwise dry-run)
-//   --api <url>       API base for the DB-lockstep check (default prod)
+//   --api <url>       API base for the DB-lockstep check (default staging)
 //   --no-api-check    skip the DB-lockstep check
 //   --force           proceed despite a failed precondition (no .git, or the API
 //                     still reporting a non-genesis checkpoint)
@@ -33,7 +33,7 @@ import { dirname, join } from "node:path";
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const DATA_DIRS = ["checkpoints", "ots", "entries"];
 const KEEP = new Set([".gitkeep"]);
-const DEFAULT_API = "https://api.webreactions.app";
+const DEFAULT_API = "https://api-staging.webreactions.app";
 
 const argv = process.argv.slice(2);
 const has = (...f) => f.some((x) => argv.includes(x));
