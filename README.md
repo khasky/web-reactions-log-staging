@@ -33,25 +33,25 @@ against the actual `op=4` leaves covered by the signed root anchored here.
 
 Every commit here is made by the anchoring bot. The message says what it did:
 
-| Commit message | File written | What it means |
-| --- | --- | --- |
-| `add checkpoint 766` | `checkpoints/<YYYY-MM-DD>.ndjson` | a new Ed25519-signed tree head (STH) for `tree_size` 766 was appended — the substantive "a checkpoint was published" event |
-| `update latest 766` | `checkpoints/latest.json` | the pointer to the newest checkpoint moved to 766 (the file the verifier reads) |
-| `ots submit 759` | `ots/759.pending.json` | checkpoint 759's root was submitted to the OpenTimestamps calendars; awaiting a Bitcoin block |
-| `ots anchor 759 @ btc#H` | `ots/759.ots` | the proof matured — 759's root is now anchored in Bitcoin block `H` |
-| `ots sidecar 759` | `ots/759.json` | the self-contained sidecar for that proof (signed STH + block height) |
-| `ots latest 759` | `ots/latest.json` | the pointer to the newest matured proof moved to 759 |
+| Commit message           | File written                      | What it means                                                                                                              |
+| ------------------------ | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `add checkpoint 766`     | `checkpoints/<YYYY-MM-DD>.ndjson` | a new Ed25519-signed tree head (STH) for `tree_size` 766 was appended — the substantive "a checkpoint was published" event |
+| `update latest 766`      | `checkpoints/latest.json`         | the pointer to the newest checkpoint moved to 766 (the file the verifier reads)                                            |
+| `ots submit 759`         | `ots/759.pending.json`            | checkpoint 759's root was submitted to the OpenTimestamps calendars; awaiting a Bitcoin block                              |
+| `ots anchor 759 @ btc#H` | `ots/759.ots`                     | the proof matured — 759's root is now anchored in Bitcoin block `H`                                                        |
+| `ots sidecar 759`        | `ots/759.json`                    | the self-contained sidecar for that proof (signed STH + block height)                                                      |
+| `ots latest 759`         | `ots/latest.json`                 | the pointer to the newest matured proof moved to 759                                                                       |
 
 `tree_size` is the cumulative number of log leaves — it only ever grows.
 
 **Commit messages are informational only.** The verifier never reads them: it
-recomputes everything from the file *contents* here plus the public API's
+recomputes everything from the file _contents_ here plus the public API's
 `/log/*` endpoints. Read them to follow what the bot did; nothing depends on
 their wording.
 
 **Why the numbers look out of order.** Checkpoint `tree_size` values jump by
 however many events landed in that hour (e.g. `742 → 754 → 759 → 766`), not by
-one. And an OTS submit always anchors the *newest* checkpoint not yet submitted,
+one. And an OTS submit always anchors the _newest_ checkpoint not yet submitted,
 so several submits walk newest → older (`766`, then `759`, …). Both are expected;
 most intermediate checkpoints never get their own OTS proof and are tied to an
 anchored one by consistency proofs instead.
@@ -99,3 +99,13 @@ third-party mirrors (e.g. Software Heritage) preserve the real history.
 
 The log data in this repository is dedicated to the public domain under
 [CC0 1.0 Universal](LICENSE) — copy, mirror, and verify it freely.
+
+## Reset schedule
+
+This staging log — and the entire staging database behind
+`https://api-staging.webreactions.app` — is **fully reset to genesis every Monday
+(around 03:00 UTC)**, and on demand. Everything in this repository is therefore
+**ephemeral**: any checkpoints, proofs, or entries you see are wiped at the next
+reset and the log is rebuilt from scratch. For anything durable, use the
+production log at
+[web-reactions-log](https://github.com/khasky/web-reactions-log).
