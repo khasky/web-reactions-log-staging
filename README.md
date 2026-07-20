@@ -1,9 +1,11 @@
 # Web Reactions Log (staging)
 
 Public, append-only transparency log for Web Reactions counters. This repository
-holds signed checkpoints and Bitcoin timestamps for the public reaction log. Used
-with the public API and the open-source verifier, it lets anyone recompute the
-counters and confirm the signed history was not silently rewritten.
+holds the signed checkpoints, Bitcoin timestamps, Sigstore Rekor anchors, signed
+daily statistics, and the raw log entries themselves. Used with the open-source
+verifier, it lets anyone recompute the counters and confirm the signed history
+was not silently rewritten — a plain `git clone` of this repository is a
+complete, offline-verifiable copy of the log.
 
 **This is the staging log** for the test environment at
 `https://api-staging.webreactions.app`, signed with its own key. Unlike the
@@ -13,8 +15,8 @@ history is intentionally short-lived.
 
 ## What's here
 
-Everything under `checkpoints/`, `ots/`, and `entries/` is written by the anchoring
-bot. What each file is for:
+Everything under `checkpoints/`, `ots/`, `entries/`, `rekor/`, and `stats/` is
+written by the anchoring bot. What each file is for:
 
 **`checkpoints/` — signed tree heads (STHs)**
 
@@ -48,16 +50,34 @@ once it lands in a Bitcoin block, so an anchored checkpoint `<tree_size>` produc
 Not every checkpoint gets its own OTS proof — only the newest not-yet-submitted one
 each time submit runs; the rest ride a consistency proof to an anchored one.
 
-**`entries/` — reserved (empty)**
+**`entries/` — the raw log leaves, mirrored**
 
-Holds only `.gitkeep`. The raw log leaves (individual reaction events) are **not**
-published here — they are served by the public API at `/log/entries`, which the
-verifier refetches to recompute the Merkle root against the signed checkpoint here.
+- `<start>-<end>.ndjson` — raw log entries in fixed 10 000-leaf ranges
+  (zero-padded), published once a checkpoint covers them. One JSON line per
+  leaf, the same shape the public API serves at `/log/entries`. A closed range
+  is immutable; only the newest one grows. A clone of this repository is
+  therefore a complete copy of the (ephemeral) staging log, and the verifier can
+  audit it fully offline (`--entries repo`).
+- `.gitkeep` — empty marker so the directory survives a fresh/reset repo.
 
-Revocations are part of that same raw API log: account erasure and other public
-corrections are append-only `op=4` leaves, exposed at `/log/revocations`. The
-verifier checks that endpoint against the actual `op=4` leaves covered by the signed
-root anchored here.
+Revocations are part of the same log: account erasure and other public
+corrections are append-only `op=4` leaves, exposed at `/log/revocations` and
+present in the shards.
+
+**`rekor/` — Sigstore Rekor anchors**
+
+- `<tree_size>.json` — sidecar for a checkpoint anchored to Sigstore Rekor, an
+  independently operated public transparency log: `{tree_size, root_hash,
+  rekor_uuid, rekor_log_index, rekor_url}`. The verifier's `--rekor` check
+  resolves the UUID and compares the signed tree head bytes.
+
+**`stats/` — signed daily aggregates**
+
+- `<YYYY-MM-DD>.json` — one signed commitment per UTC day: `votes`,
+  `unique_user_refs`, `revokes` (recomputable from the entries — the verifier
+  does exactly that), `new_accounts` (operator commitment), and, on the day a
+  pseudonym epoch closes, an `epoch_continuity` count. Ed25519 signature over a
+  canonical text rendering, same log key as the checkpoints.
 
 ## Reading the commit history
 
@@ -71,6 +91,9 @@ Every commit here is made by the anchoring bot. The message says what it did:
 | `ots anchor 759`     | `ots/759.ots`                     | the proof matured — 759's root is now anchored in Bitcoin (the block height is recorded in the `ots/759.json` sidecar)     |
 | `ots sidecar 759`    | `ots/759.json`                    | the self-contained sidecar for that proof (signed STH + block height)                                                      |
 | `ots latest 759`     | `ots/latest.json`                 | the pointer to the newest matured proof moved to 759                                                                       |
+| `add entries 741-766` | `entries/<start>-<end>.ndjson`   | leaves 741–766 (now covered by a checkpoint) were appended to the raw-entry shard                                          |
+| `rekor anchor 766`   | `rekor/766.json`                  | checkpoint 766's signed tree head was submitted to Sigstore Rekor; the sidecar records the entry UUID                      |
+| `stats 2026-07-18`   | `stats/2026-07-18.json`           | the signed daily aggregates for that UTC day were published                                                                |
 
 `tree_size` is the cumulative number of log leaves — it only ever grows.
 
@@ -88,9 +111,9 @@ anchored one by consistency proofs instead.
 
 **Editing this repository.** Docs (`README`, `LICENSE`, anything outside the data
 directories) are safe to edit — the verifier ignores them and the bot never
-touches them. The data directories — `checkpoints/`, `ots/`, and any published
-`entries/` — are machine-generated: hand-editing them, force-pushing, or
-rewriting history is exactly the tampering the verifier is built to catch (and
+touches them. The data directories — `checkpoints/`, `ots/`, `entries/`,
+`rekor/`, and `stats/` — are machine-generated: hand-editing them, force-pushing,
+or rewriting history is exactly the tampering the verifier is built to catch (and
 third-party mirrors preserve the real history). Don't edit them by hand.
 
 ## Verify
@@ -106,6 +129,15 @@ node src/verify.mjs \
   --repo https://raw.githubusercontent.com/khasky/web-reactions-log-staging/main \
   --pubkey <published staging Ed25519 key> \
   --ots
+```
+
+Fully offline audit of a clone/mirror (checkpoint from `checkpoints/latest.json`,
+leaves from the `entries/` shards; the API is not contacted):
+
+```
+node src/verify.mjs --entries repo \
+  --repo https://raw.githubusercontent.com/khasky/web-reactions-log-staging/main \
+  --pubkey <published staging Ed25519 key>
 ```
 
 ## Administrators
