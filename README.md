@@ -53,12 +53,19 @@ each time submit runs; the rest ride a consistency proof to an anchored one.
 **`entries/` — the raw log leaves, mirrored**
 
 - `<start>-<end>.ndjson` — raw log entries in fixed 10 000-leaf ranges
-  (zero-padded), published once a checkpoint covers them. One JSON line per
-  leaf, the same shape the public API serves at `/log/entries`. A closed range
-  is immutable; only the newest one grows. A clone of this repository is
+  (zero-padded), published once a checkpoint covers them — so the shards hold
+  every leaf up to the latest checkpoint and nothing newer; a just-cast reaction
+  appears here only after the next checkpoint seals it. One JSON line per leaf,
+  byte-for-byte the same object the public API serves at `/log/entries`. A closed
+  range is immutable; only the newest one grows. A clone of this repository is
   therefore a complete copy of the (ephemeral) staging log, and the verifier can
   audit it fully offline (`--entries repo`).
 - `.gitkeep` — empty marker so the directory survives a fresh/reset repo.
+
+Each leaf is pseudonymous by design. The `user_ref` field is a rotating
+per-epoch pseudonym — not your account, email, or any stable identifier. It
+changes every epoch and cannot be linked across epochs or back to a person, so
+mirroring the full log here exposes activity, never identities.
 
 Revocations are part of the same log: account erasure and other public
 corrections are append-only `op=4` leaves, exposed at `/log/revocations` and
